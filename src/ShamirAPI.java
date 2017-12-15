@@ -82,8 +82,9 @@ public class ShamirAPI {
 
 	/* Join the shares into a number */
 	public static BigInteger join(BigInteger[] shares) {
-	    BigInteger accum, count, formula, startposition, nextposition, value, numerator, denominator;
-	    for(formula = accum = 0; formula < shares.length; formula++) {
+	    int formula, count, numerator, denominator;
+		BigInteger accum, startposition, nextposition, value;
+	    for(formula=0, accum = BigInteger.ZERO; formula < shares.length; formula++) {
 	        /* Multiply the numerator across the top and denominators across the bottom to do Lagrange's interpolation
 	         * Result is x0(2), x1(4), x2(5) -> -4*-5 and (2-4=-2)(2-5=-3), etc for l0, l1, l2...
 	         */
@@ -99,9 +100,4 @@ public class ShamirAPI {
 	    }
 	    return accum;
 	}
-
-	//var sh = split(1234, 6, 3) /* split the secret value 1234 into 6 components - at least 3 of which will be needed to figure out the secret value */
-	//var newshares = [sh[1], sh[3], sh[4]]; /* pick any selection of 3 shared keys from sh */
-
-	//alert(join(newshares));
 }
