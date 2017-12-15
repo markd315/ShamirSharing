@@ -33,7 +33,7 @@ public class ShamirAPI {
 	     */
 	    for(x = 0; x < available;) {
 	        /* coef = [1234, 166, 94] which is 1234x^0 + 166x^1 + 94x^2 */
-	    	y = coef[0];
+	    	y = coef[0]; //Set the y intercept (secret key)
 	    	for(exp = 1; exp < needed; exp++) {
 	    		int xpow = (int) Math.pow(x, exp);
 	        	y = coef[exp].multiply(BigInteger.valueOf(xpow)).add(y);// y+= coef * (x^exp)
@@ -82,21 +82,22 @@ public class ShamirAPI {
 
 	/* Join the shares into a number */
 	public static BigInteger join(BigInteger[] shares) {
-	    int formula, count, numerator, denominator;
-		BigInteger accum, startposition, nextposition, value;
+	    int formula, count;
+		BigInteger numerator, denominator;
+		BigInteger accum, startPosition, nextPosition, value;
 	    for(formula=0, accum = BigInteger.ZERO; formula < shares.length; formula++) {
 	        /* Multiply the numerator across the top and denominators across the bottom to do Lagrange's interpolation
 	         * Result is x0(2), x1(4), x2(5) -> -4*-5 and (2-4=-2)(2-5=-3), etc for l0, l1, l2...
 	         */
-	        for(count = 0, numerator = denominator = 1; count < shares.length; count++) {
+	        for(count = 0, numerator = denominator = BigInteger.ONE; count < shares.length; count++) {
 	            if(formula == count) continue; // If not the same value
-	            startposition = shares[formula][0];
-	            nextposition = shares[count][0];
-	            numerator = (numerator * -nextposition) % prime;
-	            denominator = (denominator * (startposition - nextposition)) % prime;
+	            startPosition = shares[formula];
+	            nextPosition = shares[count];
+	            numerator = (nextPosition.negate().multiply(numerator)).mod(prime);
+	            denominator = (startPosition.subtract(nextPosition).multiply(denominator)).mod(prime);
 	        }
-	        value = shares[formula][1];
-	        accum = (prime + accum + (value * numerator * modInverse(denominator))) % prime;
+	        value = shares[formula];
+	        accum = ((value.multiply(numerator).multiply(modInverse(denominator))).add(prime).add(accum)).mod(prime);
 	    }
 	    return accum;
 	}
