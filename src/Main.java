@@ -37,7 +37,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JTextArea sightingDate;
     
     public Main() {
-    	db = new DatabaseAPI();
+    	db = new ShamirAPI();
     	debugLabel = new javax.swing.JLabel();
         nameSelector = new javax.swing.JComboBox<String>();
         queryButton = new javax.swing.JButton();
@@ -191,5 +191,4 @@ public class Main extends javax.swing.JFrame {
             }
         });
     }
-   
 }

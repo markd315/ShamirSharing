@@ -58,9 +58,10 @@ public class ShamirAPI {
 
 	/* Gives the multiplicative inverse of k mod prime.  In other words (k * modInverse(k)) % prime = 1 for all prime > k >= 1  */
 	public static BigInteger modInverse(BigInteger k) { 
-	    k = k.mod(BigInteger.valueOf(prime)); // k%=prime
-	    BigInteger r = (k < 0) ? - gcdD(prime,-k)[2] : gcdD(prime,k)[2];
-	    return (prime + r) % prime;
+	    k = k.mod(prime); // k%=prime
+	    BigInteger r = (k.compareTo(BigInteger.ZERO) < 0) ? gcdD(prime, k.negate())[2].negate() : gcdD(prime,k)[2];
+	    //x.compareTo(y) positive for x>y, negative for x<y
+	    return (prime.add(r)).mod(prime);
 	}
 
 	/* Join the shares into a number */
