@@ -1,0 +1,5 @@
+I figure I should point you where I went.
+
+https://github.com/codahale/shamir
+
+There's no GUI for his, it's just an API but that's okay.
