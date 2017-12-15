@@ -13,15 +13,13 @@ public class ShamirAPI {
 	/* Split number into the shares */
 	public static BigInteger[] split(BigInteger number, int available, int needed) {
 		BigInteger[] coef = new BigInteger[needed]; //2 points define a line: takes ax +b, 3 points define a parabola: takes ax^2 + bx + c
-	    //TODO Populate coef with number as LSB and random generated info for higher order.
 		coef[0] = number;
 		
 		for(int c = 1; c < needed; c++)
 			coef[c] = new BigInteger(1024, new Random());
-			//TODO previous line will fail. Can't multiply double by bigint
-	    int x, exp, c;
+		int x, exp, c;
 		BigInteger y;
-	    BigInteger[] shares = new BigInteger[available * 2]; //TODO 
+	    BigInteger[] shares = new BigInteger[available * 2];
 	    /* Normally, we use the line:
 	     * 
 	     * where (prime - 1) is the maximum allowable value.
@@ -31,15 +29,16 @@ public class ShamirAPI {
 	     * For each share that is requested to be available, run through the formula plugging the corresponding coefficient
 	     * The result is f(x), where x is the byte we are sharing (in the example, 1234)
 	     */
-	    for(x = 0; x < available;) {
+	    for(x = 0; x < 2*available;) {
 	        /* coef = [1234, 166, 94] which is 1234x^0 + 166x^1 + 94x^2 */
 	    	y = coef[0]; //Set the y intercept (secret key)
 	    	for(exp = 1; exp < needed; exp++) {
-	    		int xpow = (int) Math.pow(x, exp);
+	    		int xpow = (int) Math.pow(x-1, exp);//We want odd x values to avoid the x=0 case which would just reveal our y-intercept in share index 0.
 	        	y = coef[exp].multiply(BigInteger.valueOf(xpow)).add(y);// y+= coef * (x^exp)
 	    	}
 	        /* Store values as tuples like (1, 1155), (2, 781), (3, 112), (4, 385), (5, 363) (6, 46) */
-	        shares[x] = BigInteger.valueOf(x);
+	    	System.out.println("wrote to (and +1) " + x);
+	    	shares[x] = BigInteger.valueOf(x-1); //We should make sure we accurately store the x value we calculated.
 	        shares[x+1] = y;
 	        x+=2;
 	    }
@@ -82,7 +81,9 @@ public class ShamirAPI {
 
 	/* Join the shares into a number */
 	public static BigInteger join(BigInteger[] shares) {
-	    int formula, count;
+	    //TODO Reimplement this https://en.wikipedia.org/wiki/Lagrange_polynomial#Definition
+		//TODO function not working.
+		int formula, count;
 		BigInteger numerator, denominator;
 		BigInteger accum, startPosition, nextPosition, value;
 	    for(formula=0, accum = BigInteger.ZERO; formula < shares.length; formula++) {
