@@ -48,16 +48,32 @@ public class ShamirAPI {
 
 	/* Gives the decomposition of the gcd of a and b.  Returns [x,y,z] such that x = gcd(a,b) and y*a + z*b = x */
 	public static BigInteger[] gcdD(BigInteger a, BigInteger b) { 
-	    if (b == 0) 
-	    	return {a, 1, 0}; 
+	    if (b.equals(BigInteger.ZERO)) { 
+	    	BigInteger[] re = new BigInteger[3];
+	    	re[0] = a;
+	    	re[1] = BigInteger.ONE;
+	    	re[2] = BigInteger.ZERO;
+	    	return re; 
+	    }
 	    else { 
-	        var n = Math.floor(a/b), c = a % b, r = gcdD(b,c); 
-	        return {r[0], r[2], r[1]-r[2]*n};
+	        BigInteger n = a.divide(b);
+	        BigInteger c = a.mod(b);
+	        BigInteger[] r = gcdD(b,c); 
+	        BigInteger[] re = new BigInteger[3];
+	    	re[0] = r[0];
+	    	re[1] = r[2];
+	    	re[2] = r[1].subtract(r[2].multiply(n));
+	        return re;
 	    }
 	}
 
 	/* Gives the multiplicative inverse of k mod prime.  In other words (k * modInverse(k)) % prime = 1 for all prime > k >= 1  */
 	public static BigInteger modInverse(BigInteger k) { 
+	    return modInverse(k, prime);
+	}
+	
+	/* Gives the multiplicative inverse of k mod prime.  In other words (k * modInverse(k)) % prime = 1 for all prime > k >= 1  */
+	public static BigInteger modInverse(BigInteger k, BigInteger prime) { 
 	    k = k.mod(prime); // k%=prime
 	    BigInteger r = (k.compareTo(BigInteger.ZERO) < 0) ? gcdD(prime, k.negate())[2].negate() : gcdD(prime,k)[2];
 	    //x.compareTo(y) positive for x>y, negative for x<y
